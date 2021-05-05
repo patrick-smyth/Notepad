@@ -127,6 +127,7 @@ public class Notepad  {
                     FileReader fr = new FileReader(file);
                     textArea.read(fr,"file");
                     fileSave = file;
+                    frame.setTitle(fileSave.getName());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -224,6 +225,7 @@ public class Notepad  {
         BufferedWriter wr = new BufferedWriter(new FileWriter(file,false));
         textArea.write(wr);
         wr.close();
+        frame.setTitle(fileSave.getName());
 
     }
 
