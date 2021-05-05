@@ -8,19 +8,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.util.ArrayList;
+import java.security.Key;
 
 public class Notepad  {
 
     JFrame frame;
     JMenuBar menuBar;
-    JMenu file;
-    JMenu edit;
+    JMenu file, edit, format;
     JMenuItem open, newFile,save,saveAs,exit;
     JMenuItem undo, cut, copy, paste, selectAll;
     JMenuItem font;
-    JMenu format;
-
+    UndoManager undoManager = new UndoManager();
+    InputMap inputMap;
+    ActionMap actionMap;
     JPanel panel;
 
     JFileChooser fileChooser;
@@ -28,12 +28,7 @@ public class Notepad  {
     Clipboard clip;
 
     File fileSave;
-    ArrayList<Integer> keysPressed = new ArrayList<>();
     AbstractAction saveAction, openAction;
-    UndoManager undoManager = new UndoManager();
-    InputMap inputMap;
-    ActionMap actionMap;
-
 
     Notepad() {
         file = new JMenu("File");
@@ -103,6 +98,7 @@ public class Notepad  {
         frame.pack();
         frame.setVisible(true);
 
+        // Initialise save file action
         saveAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -117,6 +113,7 @@ public class Notepad  {
             }
         };
 
+        // Initialises open file action
         openAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -134,18 +131,18 @@ public class Notepad  {
             }
         };
 
+        //Initialise input and action maps for key bindings
        inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
        actionMap = panel.getActionMap();
 
-
-
-       fileSetUp();
-       keyBindingSetUp();
-       editSetup();
+        fileSetUp(); // sets up file menu
+        fileMenuBindingSetUp();
+        editSetup(); // sets up edit menu
 
     }
 
     private void fileSetUp() {
+        // Creates new Notepad window on button click
         newFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -153,8 +150,11 @@ public class Notepad  {
             }
         });
 
+        // Calls openAction on "Open" button click, which allows user to choose which file to open
         open.addActionListener(openAction);
+        // Calls saveAction on "Save" click, which saves current file
         save.addActionListener(saveAction);
+        // Save file to new location on button click
         saveAs.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -167,6 +167,7 @@ public class Notepad  {
 
             }
         });
+        // Exits window on button click
         exit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -177,6 +178,7 @@ public class Notepad  {
     }
 
     private void editSetup() {
+         // Initialises undoAction
         AbstractAction undoAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -184,6 +186,7 @@ public class Notepad  {
             }
         };
 
+        // Undoes last keystroke when you click undo button
         undo.addActionListener(undoAction);
 
 
@@ -204,7 +207,7 @@ public class Notepad  {
 
 
 
-    private void keyBindingSetUp() {
+    private void fileMenuBindingSetUp() {
 
         // File menu key bindings
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK), "save");
@@ -212,6 +215,14 @@ public class Notepad  {
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK),"open");
         actionMap.put("open",openAction);
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK),"new");
+        actionMap.put("new", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Notepad notepad = new Notepad();
+            }
+        });
 
 
     }
