@@ -191,6 +191,14 @@ public class Notepad  {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK),"undo");
         actionMap.put("undo",undoAction);
 
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK),"redo");
+        actionMap.put("redo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoManager.redo();
+            }
+        });
+
     }
 
 
