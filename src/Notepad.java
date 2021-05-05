@@ -15,14 +15,18 @@ public class Notepad  {
 
     JFrame frame;
     JMenuBar menuBar;
-    JMenu file, edit, format;
+    JMenu file, edit;
     JMenuItem open, newFile,save,saveAs,exit;
     JMenuItem undo, cut, copy, paste, selectAll;
-    JMenuItem font;
     UndoManager undoManager = new UndoManager();
     InputMap inputMap;
     ActionMap actionMap;
     JPanel panel;
+    JComboBox<String> fontPicker;
+    JComboBox<Integer> fontSizePicker;
+    String fontName;
+    int fontStyle, fontSize;
+    String[] fontNames = {"Times New Roman", "Arial", "Comic Sans", "Calibri"};
 
     JFileChooser fileChooser;
     JTextArea textArea;
@@ -34,7 +38,6 @@ public class Notepad  {
     Notepad() {
         file = new JMenu("File");
         edit = new JMenu("Edit");
-        format = new JMenu("Format");
 
         // File menu items
         open = new JMenuItem("Open");
@@ -62,14 +65,12 @@ public class Notepad  {
         edit.add(paste);
         edit.add(selectAll);
 
-        // Format menu items
-        font = new JMenuItem("Font");
-        format.add(font);
-
+        setFontPicker();
         menuBar = new JMenuBar();
         menuBar.add(file);
         menuBar.add(edit);
-        menuBar.add(format);
+        menuBar.add(fontPicker);
+        menuBar.add(fontSizePicker);
 
         frame = new JFrame("Notepad");
         frame.setVisible(true);
@@ -95,6 +96,9 @@ public class Notepad  {
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(800,110));
         panel.add(scrollPane,BorderLayout.CENTER);
+
+        fontSize = 12;
+        fontStyle = Font.PLAIN;
 
         clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 
@@ -153,6 +157,35 @@ public class Notepad  {
 
 
     }
+
+    private void setFontPicker() {
+        fontPicker = new JComboBox<>(fontNames);
+        fontPicker.setPrototypeDisplayValue("Times New Roman");
+        fontPicker.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fontName = (String)fontPicker.getSelectedItem();
+                setFont();
+            }
+        });
+        Integer[] fontSizes = {2,4,6,8,10,12,14,16,18,20,24,28,30,32};
+        fontSizePicker = new JComboBox<Integer>(fontSizes);
+        fontSizePicker.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fontSize = (int) fontSizePicker.getSelectedItem();
+                setFont();
+            }
+        });
+    }
+
+    private void setFont() {
+        textArea.setFont(new Font(fontName,fontStyle,fontSize));
+    }
+
+
+
+
 
     private void fileSetUp() {
         // Creates new Notepad window on button click
@@ -286,6 +319,9 @@ public class Notepad  {
         fileChooser.setDialogTitle("Save your txt file");
         fileSave = fileChooser.getSelectedFile();
     }
+
+
+
 
 
     public static void main(String[] args) {
