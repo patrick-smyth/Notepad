@@ -3,6 +3,7 @@ import javax.swing.*;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -28,7 +29,7 @@ public class Notepad  {
     Clipboard clip;
 
     File fileSave;
-    AbstractAction saveAction, openAction;
+    AbstractAction saveAction, openAction, undoAction;
 
     Notepad() {
         file = new JMenu("File");
@@ -95,6 +96,8 @@ public class Notepad  {
         scrollPane.setPreferredSize(new Dimension(800,110));
         panel.add(scrollPane,BorderLayout.CENTER);
 
+        clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+
         frame.pack();
         frame.setVisible(true);
 
@@ -131,6 +134,14 @@ public class Notepad  {
             }
         };
 
+        // Initialises undoAction
+        undoAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                undoManager.undo();
+            }
+        };
+
         //Initialise input and action maps for key bindings
        inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
        actionMap = panel.getActionMap();
@@ -138,6 +149,8 @@ public class Notepad  {
         fileSetUp(); // sets up file menu
         fileMenuBindingSetUp();
         editSetup(); // sets up edit menu
+        editMenuBindingSetUp();
+
 
     }
 
@@ -178,18 +191,44 @@ public class Notepad  {
     }
 
     private void editSetup() {
-         // Initialises undoAction
-        AbstractAction undoAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                undoManager.undo();
-            }
-        };
-
         // Undoes last keystroke when you click undo button
         undo.addActionListener(undoAction);
 
+        // Cuts selected text on button click
+        cut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.cut();
+            }
+        });
 
+        // Copies selected text on button click
+        copy.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.copy();
+            }
+        });
+
+        // Pastes text to textArea on button click
+        paste.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.paste();
+            }
+        });
+
+        // Selects all text on button click
+        selectAll.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.selectAll();
+            }
+        });
+
+    }
+
+    private void editMenuBindingSetUp() {
         // Edit menu key bindings
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK),"undo");
@@ -202,8 +241,8 @@ public class Notepad  {
                 undoManager.redo();
             }
         });
-
     }
+
 
 
 
@@ -226,6 +265,7 @@ public class Notepad  {
 
 
     }
+
 
 
     private void save(File file) throws IOException {
