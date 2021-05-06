@@ -83,9 +83,13 @@ public class Notepad  {
         panel = new JPanel();
         frame.add(panel);
 
+        fontName = "Times New Roman";
+        fontStyle = Font.PLAIN;
+        fontSize = 12;
+
         panel.setLayout(new BorderLayout());
         textArea = new JTextArea(BorderLayout.CENTER);
-        Font font = new Font("Times New Roman", Font.PLAIN,18);
+        Font font = new Font(fontName, fontStyle,fontSize);
         textArea.setFont(font);
         textArea.setText("");
         textArea.setLineWrap(true);
@@ -97,7 +101,7 @@ public class Notepad  {
         scrollPane.setPreferredSize(new Dimension(800,110));
         panel.add(scrollPane,BorderLayout.CENTER);
 
-        fontSize = 12;
+        fontSize = 18;
         fontStyle = Font.PLAIN;
 
         clip = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -160,7 +164,7 @@ public class Notepad  {
 
     private void setFontPicker() {
         fontPicker = new JComboBox<>(fontNames);
-        fontPicker.setPrototypeDisplayValue("Times New Roman");
+        fontPicker.setPreferredSize(new Dimension(50,25));
         fontPicker.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -170,6 +174,7 @@ public class Notepad  {
         });
         Integer[] fontSizes = {2,4,6,8,10,12,14,16,18,20,24,28,30,32};
         fontSizePicker = new JComboBox<Integer>(fontSizes);
+        fontSizePicker.setSelectedItem(18);
         fontSizePicker.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
